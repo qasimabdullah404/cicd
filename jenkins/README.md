@@ -80,3 +80,5 @@ Before using this plugin from a project, you must first configure some system-wi
 The **Slack Notification** plugin can be installed in Jenkins either for all jobs or specific projects. On Slack, the Jenkins CI app will also be installed to post build notifications to a channel in Slack.
 
 ## Supported CI/CD Workflows
+
+The default interaction model with Jenkins, historically, has been very web UI driven, requiring users to manually create jobs, then manually fill in the details through a web browser. With the introduction of the Pipeline plugin, users now can implement a project’s entire build/test/deploy pipeline in a Jenkinsfile and store that alongside their code, treating their pipeline as another piece of code checked into source control. Jenkins Pipeline could either use the Declarative or Scripted syntax.
