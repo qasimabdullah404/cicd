@@ -39,6 +39,18 @@ The recommended image is the Official Jenkins Docker image from Docker Hub. It c
 
 However, this image doesn’t have docker CLI inside it and is not bundled with frequently used Blue Ocean plugins and features.
 
+[Jenkins Installation](https://www.notion.so/5c70ecc3ab734031ac9ccb4733149011)
+
+|  Environment | Software Requirements |  Link          
+| -----------  | --------------------  | --------------
+| Docker       |   Docker, Java 8/11   | https://www.jenkins.io/doc/book/installing/docker/
+| Kubernetes   |   Docker, Kubernetes  | https://www.jenkins.io/doc/book/installing/kubernetes/
+| Linux        |  Java                 | https://www.jenkins.io/doc/book/installing/linux
+| Windows      |  Java                 | https://www.jenkins.io/doc/book/installing/windows
+| macOS        | Homebrew              | https://www.jenkins.io/download/lts/macos/
+| WAR files    | Java                  | https://www.jenkins.io/doc/book/installing/war-file/
+
+
 ## Pricing
 
 Jenkins is free. Jenkins Enterprise provided by CloudBees is not free
