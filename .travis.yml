@@ -11,15 +11,16 @@ before_script:
   - npm test
 
 
-  #### Build app with docker ####
+  #### Build app with docker #####
+sudo: required  
 services: 
   - docker
 before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin 
-  - docker build -t dockerhub_repo/name:tag .
+  - docker build -t dotunn/travis:node /travisci/node
   - docker images
 script:
-  - docker push dockerhub_repo/name:tag
+  - docker push dotunn/travis:node
 
 deploy:
 ####### Deploy to aws codedeploy ######
