@@ -5,7 +5,7 @@ pipeline {
   }
   agent any
   parameters {
-    gitParameter branchFilter: 'origin/(.*)', defaultValue: 'develop', name: 'BRANCH', type: 'PT_BRANCH'
+    gitParameter branchFilter: 'origin/(.*)', defaultValue: 'jenkins-node', name: 'BRANCH', type: 'PT_BRANCH'
   }
   
   tools {nodejs "NodeJS"}
@@ -13,7 +13,7 @@ pipeline {
   stages { 
     stage('Git Checkout') {
       steps {
-        git branch: "${params.BRANCH}", url: 'https://github.com/ChiamakaObitube/AutoMart.git'
+        git branch: "${params.BRANCH}", url: 'https://github.com/Nautilus-Technologies/cicd.git'
       }
     }
     stage('Build') {
