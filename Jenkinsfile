@@ -21,9 +21,6 @@ pipeline {
         }
         
         stage('Build') {
-           /* when {
-                anyOf { branch 'master'; branch 'staging' }  
-            }*/
             steps {
                 echo 'Compiling and building'
                 sh 'go build'
