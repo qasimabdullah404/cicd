@@ -1,68 +1,38 @@
 pipeline {
-    agent any
-    tools {
-        go 'Go'
-    }
-    parameters {
-        string(name: 'RECIPIENTS', defaultValue: 'obitubealex@gmail.com', description: 'Email for the build result')
-    }
-    environment {
-        GO114MODULE = 'on'
-        CGO_ENABLED = 0 
-        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
-    }
-    stages {        
-        stage('Pre Test') {
-            steps {
-                echo 'Installing dependencies'
-                sh 'go version'
-                sh 'go get -u golang.org/x/lint/golint'
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                echo 'Compiling and building'
-                sh 'go build'
-            }
-        }
 
-        stage('Test') {
-            steps {
-                withEnv(["PATH+GO=${GOPATH}/bin"]){
-                    echo 'Running vetting'
-                    sh 'go vet .'
-                    echo 'Running linting'
-                    sh 'golint .'
-                    echo 'Running test'
-                    sh 'cd test && go test -v'
-                }
+  agent {
+          docker { 
+              image 'python:3.9.4'
             }
-        }
-
-        stage('Deploy') {
-            when {
-                branch 'master'
-            }
-            steps {
-                echo 'Deploy the app'
-            }
-        }
-        
+}
+  stages {
+    stage('Run python') {
+      steps {
+          sh 'pip --version'
+      }
+  }
+    stage('build') {
+      steps {
+        sh '''
+            python -m venv .venv 
+            . .venv/bin/activate
+            pip install -r requirements.txt
+          '''
+      }
     }
-    post {
+    stage('test') {
+      steps {
+        sh '''
+            python -m venv .venv 
+            . .venv/bin/activate
+            python test.py
+          '''
+      }
+      post {
         always {
-            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                to: "${params.RECIPIENTS}",
-                subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
-            
+          junit 'test-reports/*.xml'
         }
-        success {
-            slackSend color: '#27ae60', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: 'jenkins'
-        }
-        failure {
-            slackSend color: '#e74c3c', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: 'jenkins'
-        }
-    }  
+      }    
+    }
+  }
 }
