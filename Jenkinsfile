@@ -24,12 +24,13 @@ pipeline {
          '''
        }
     }
+     /*
    stage('Test') {
       steps {
         sh 'npm run test'
       }
     }
-    /*
+   
     stage('Building image') {
       steps{
         script {
