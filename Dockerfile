@@ -1,20 +1,34 @@
-FROM node:14-slim
+# Start from base image
+FROM golang:alpine as builder
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get clean
-
-RUN mkdir /app
+# Set the current working directory inside the container
 WORKDIR /app
 
-COPY package.json /app/
-COPY .babelrc /app/
-COPY .eslintrc.json /app/
+# Copy go mod and sum files
+COPY go.mod go.sum ./
 
-RUN npm install
+# Download all dependencies
+RUN go mod download
 
-COPY server /app/server
+# Copy source from current directory to working directory
+COPY . .
 
-EXPOSE 5000
-CMD ["npm", "build"]
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -o main .
 
-CMD [ "npm", "start" ]
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+# Set the current working directory inside the container
+WORKDIR /root
+
+# Copy the binary executable over
+COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
+
+# Expose necessary port
+EXPOSE 3000
+
+# Run the created binary executable 
+CMD ["./main"]

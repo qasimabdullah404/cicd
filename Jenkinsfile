@@ -1,57 +1,71 @@
 pipeline {
-  environment {
-    registry = "chiamakaobitube/node-jenkins"
-    registryCredential = 'dockerhub'
-  }
-  agent any
-  parameters {
-    gitParameter branchFilter: 'origin/(.*)', defaultValue: 'jenkins-node', name: 'BRANCH', type: 'PT_BRANCH'
-  }
-  
-  tools {nodejs "NodeJS"}
+    agent any
+    tools {
+        go 'Go'
+    }
+    parameters {
+        string(name: 'RECIPIENTS', defaultValue: 'obitubealex@gmail.com', description: 'Email for the build result')
+    }
+    environment {
+        GO114MODULE = 'on'
+        CGO_ENABLED = 0 
+        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
+    }
+    stages {        
+        stage('Pre Test') {
+            steps {
+                echo 'Installing dependencies'
+                sh 'go version'
+                sh 'go get -u golang.org/x/lint/golint'
+            }
+        }
+        
+        stage('Build') {
+           /* when {
+                anyOf { branch 'master'; branch 'staging' }  
+            }*/
+            steps {
+                echo 'Compiling and building'
+                sh 'go build'
+            }
+        }
 
-  stages { 
-    stage('Git Checkout') {
-      steps {
-        git branch: "${params.BRANCH}", url: 'https://github.com/Nautilus-Technologies/cicd.git'
-      }
-    }
-    stage('Build') {
-       steps {
-         sh '''
-         npm install
-         npm run build
-         '''
-       }
-    }
-     /*
-   stage('Test') {
-      steps {
-        sh 'npm run test'
-      }
-    }
-   
-    stage('Building image') {
-      steps{
-        script {
-          docker.build registry + ":$BUILD_NUMBER"
+        stage('Test') {
+            steps {
+                withEnv(["PATH+GO=${GOPATH}/bin"]){
+                    echo 'Running vetting'
+                    sh 'go vet .'
+                    echo 'Running linting'
+                    sh 'golint .'
+                    echo 'Running test'
+                    sh 'cd test && go test -v'
+                }
+            }
         }
-      }
-    }
-    stage('Deploy Image') {
-      steps{
-        script {
-          docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
+
+        stage('Deploy') {
+            when {
+                branch 'master'
+            }
+            steps {
+                echo 'Deploy the app'
+            }
         }
-      }
+        
     }
-    stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
-      }
-    }
-    */
-  }
+    post {
+        always {
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: "${params.RECIPIENTS}",
+                subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+            
+        }
+        success {
+            slackSend color: '#27ae60', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: 'jenkins'
+        }
+        failure {
+            slackSend color: '#e74c3c', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: 'jenkins'
+        }
+    }  
 }
