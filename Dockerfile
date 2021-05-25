@@ -1,34 +1,16 @@
-# Start from base image
-FROM golang:alpine as builder
+FROM python:3.9.4
 
-# Set the current working directory inside the container
-WORKDIR /app
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Install app dependencies
+COPY requirements.txt /usr/src/app/
+RUN pip install -r requirements.txt
 
-# Download all dependencies
-RUN go mod download
+# Bundle app source
+COPY . /usr/src/app
 
-# Copy source from current directory to working directory
-COPY . .
-
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -o main .
-
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates
-
-# Set the current working directory inside the container
-WORKDIR /root
-
-# Copy the binary executable over
-COPY --from=builder /app/main .
-COPY --from=builder /app/.env .
-
-# Expose necessary port
-EXPOSE 3000
-
-# Run the created binary executable 
-CMD ["./main"]
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["app.py"]
