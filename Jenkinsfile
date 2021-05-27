@@ -11,7 +11,9 @@ pipeline {
             image 'python:3.9.4'
           }
     }
+    */
   stages {
+    /* 
     stage('Run python') {
       steps {
           sh 'pip --version'
