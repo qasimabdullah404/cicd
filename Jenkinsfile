@@ -1,3 +1,4 @@
+def dockerImage
 pipeline {
   environment{
     registry = "chiamakaobitube/node-jenkins"
