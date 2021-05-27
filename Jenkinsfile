@@ -5,10 +5,10 @@ pipeline {
     dockerImage = ''
   }
   agent {
-          docker { 
-              image 'python:3.9.4'
-            }
-}
+        docker { 
+            image 'python:3.9.4'
+          }
+    }
   stages {
     stage('Run python') {
       steps {
@@ -59,6 +59,5 @@ pipeline {
           sh "docker rmi $registry:$BUILD_NUMBER"
         }
       }
-    }
   }
 }
