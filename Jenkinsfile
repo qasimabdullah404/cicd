@@ -30,7 +30,7 @@ pipeline {
         sh 'npm run test'
       }
     }
-   
+   */
     stage('Building image') {
       steps{
         script {
