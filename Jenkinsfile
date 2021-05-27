@@ -32,12 +32,7 @@ pipeline {
             python test.py
           '''
       }
-    }
-      post {
-        always {
-          junit 'test-reports/*.xml'
-        }
-      }    
+    }  
       stage('Building image') {
       steps{
         script {
@@ -59,5 +54,10 @@ pipeline {
           sh "docker rmi $registry:$BUILD_NUMBER"
         }
       }
+      post {
+        always {
+          junit 'test-reports/*.xml'
+        }
+      }  
   }
 }
