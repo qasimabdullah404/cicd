@@ -1,5 +1,9 @@
 pipeline {
-
+  environment {
+    registry = "chiamakaobitube/jenkins-python"
+    registryCredential = 'Docker'
+    dockerImage = ''
+  }
   agent {
           docker { 
               image 'python:3.9.4'
@@ -33,6 +37,27 @@ pipeline {
           junit 'test-reports/*.xml'
         }
       }    
+      stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+    }
+      stage('Deploy Image') {
+        steps{
+          script {
+            docker.withRegistry( '', registryCredential ) {
+              dockerImage.push()
+            }
+          }
+        }
+      }
+      stage('Remove Unused docker image') {
+        steps{
+          sh "docker rmi $registry:$BUILD_NUMBER"
+        }
+      }
     }
   }
 }
