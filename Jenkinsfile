@@ -1,5 +1,5 @@
 pipeline {
-  environment {
+  environment{
     registry = "chiamakaobitube/node-jenkins"
     registryCredential = 'Docker'
     dockerImage = ''
