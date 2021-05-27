@@ -2,7 +2,7 @@ pipeline {
   environment {
     registry = "chiamakaobitube/node-jenkins"
     registryCredential = 'Docker'
-    dockerImage = ''
+    dockerImage = ' '
   }
   agent any
   parameters {
@@ -41,8 +41,8 @@ pipeline {
     }
     stage('Deploy Image') {
       steps{
-        script {
-          docker.withRegistry( '', registryCredential ) {
+         script {
+            docker.withRegistry( '', registryCredential ) {
             dockerImage.push()
           }
         }
