@@ -53,11 +53,6 @@ pipeline {
         steps{
           sh "docker rmi $registry:$BUILD_NUMBER"
         }
-      }
-      post {
-        always {
-          junit 'test-reports/*.xml'
-        }
-      }  
+      } 
   }
 }
