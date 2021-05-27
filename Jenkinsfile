@@ -14,7 +14,7 @@ pipeline {
       steps {
           sh 'pip --version'
       }
-  }
+   }
     stage('build') {
       steps {
         sh '''
@@ -32,6 +32,7 @@ pipeline {
             python test.py
           '''
       }
+    }
       post {
         always {
           junit 'test-reports/*.xml'
