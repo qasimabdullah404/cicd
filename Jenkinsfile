@@ -1,4 +1,3 @@
-def dockerImage
 pipeline {
   environment{
     registry = "chiamakaobitube/node-jenkins"
@@ -33,10 +32,10 @@ pipeline {
       }
     }
    */
-    stage('Building image') {
+   stage('Building image') {
       steps{
         script {
-          docker.build registry + ":$BUILD_NUMBER"
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
         }
       }
     }
