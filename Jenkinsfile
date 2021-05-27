@@ -4,6 +4,8 @@ pipeline {
     registryCredential = 'Docker'
     dockerImage = ''
   }
+  agent any
+  /* 
   agent {
         docker { 
             image 'python:3.9.4'
@@ -32,7 +34,7 @@ pipeline {
             python test.py
           '''
       }
-    }  
+    }  */
       stage('Building image') {
       steps{
         script {
