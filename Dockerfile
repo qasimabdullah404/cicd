@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY requirements.txt /usr/src/app/
+COPY test.py /usr/src/app/
 RUN pip install -r requirements.txt
 RUN python test.py
 
