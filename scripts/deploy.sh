@@ -12,4 +12,4 @@ echo "The build number is ${TRAVIS_BUILD_NUMBER}"
   --server=$KUBERNETES_SERVER \
   --certificate-authority=cert.crt \
   --token=$KUBERNETES_TOKEN \
-  set image deployment/travispy travispy=dotunn/travis:py --record
+  set image deployment/travispy travispy=dotunn/travis:py01 --record
