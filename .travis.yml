@@ -3,12 +3,12 @@ language: node_js
 # node_js:
   # - 8
  
-before_script:
+# before_script:
   # - npm install (install all build dependencies on each line)
   # - npm install ........
 
 # Unit testing
-  - npm test
+  # - npm test
 
 
   #### Build app with docker #####
