@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travispy
+  namespace: travis
+  labels:
+    app: travispy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travispy
+  template:
+    metadata:
+      labels:
+        app: travispy
+    spec:
+      containers:
+        - name: travispy
+          image: dotunn/travis:py
+          ports:
+            - containerPort: 5000
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: travispy
+  namespace: travis
+  labels:
+    app: travispy
+spec:
+  selector:
+    app: travispy
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
