@@ -17,15 +17,17 @@ language: python
 services: 
   - docker
 before_install:
-#  - curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-#  - chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
-
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
   - chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
   - mkdir ${HOME}/.kube
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin 
   - docker build -t dotunn/travis:py01 .
   - docker images
+  - sed -i -e 's|KUBERNETES_CLUSTER_CERTIFICATE|'"${KUBERNETES_CLUSTER_CERTIFICATE}"'|g' kubeconfig
+  - sed -i -e 's|KUBERNETES_SERVER|'"${KUBERNETES_SERVER}"'|g' kubeconfig
+  - sed -i -e 's|KUBE_ADMIN_CERT|'"${KUBE_ADMIN_CERT}"'|g' kubeconfig
+  - sed -i -e 's|KUBE_ADMIN_KEY|'"${KUBE_ADMIN_KEY}"'|g' kubeconfig
+  - sed -i -e 's|KUBERNETES_TOKEN|'"${KUBERNETES_TOKEN}"'|g' kubeconfig
 script:
   - docker push dotunn/travis:py01
   - bash scripts/updateKube.sh

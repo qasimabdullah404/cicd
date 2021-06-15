@@ -1,6 +1,6 @@
 #!/bin/bash
 # cat ${HOME}/.kube/config | base64 | pbcopy
-echo "$KUBE_CONFIG" | base64 --decode > ${HOME}/.kube/config
+# echo "$KUBE_CONFIG" | base64 --decode > ${HOME}/.kube/config
 echo "$KUBERNETES_CLUSTER_CERTIFICATE" | base64 --decode > cert.crt
 /usr/local/bin/kubectl \
   --kubeconfig=/dev/null \
