@@ -2,15 +2,19 @@ FROM node:9
 
 WORKDIR /app
 
-RUN npm install -g contentful-cli 
+ADD . /app 
+
+#RUN npm install -g contentful-cli 
 #install app dependencies
 
-COPY package.json .
+#COPY package.json .
 RUN npm install
 
-COPY . .
+#COPY . .
 
-USER node
+#USER node
 EXPOSE 3000
 
-CMD ./run.sh 
+#CMD ./run.sh 
+
+CMD ["npm", "run", "start:dev"]  
