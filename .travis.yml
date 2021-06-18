@@ -1,42 +1,37 @@
 language: node_js
-#### Build app with npm"
-# node_js:
-  # - 8
- 
-# before_script:
-  # - npm install (install all build dependencies on each line)
-  # - npm install ........
-
-# Unit testing
-  # - npm test
-
 
   #### Build app with docker #####
 sudo: required  
 services: 
   - docker
 before_install:
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl   
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin 
-  - docker build -t dotunn/travis:node .
+  - docker build -t dotunn/travis:node0 .
   - docker images
+  - sed -i -e 's|KUBERNETES_CLUSTER_CERTIFICATE|'"${KUBERNETES_CLUSTER_CERTIFICATE}"'|g' kubeconfig
+  - sed -i -e 's|KUBERNETES_SERVER|'"${KUBERNETES_SERVER}"'|g' kubeconfig
+  - sed -i -e 's|KUBE_ADMIN_CERT|'"${KUBE_ADMIN_CERT}"'|g' kubeconfig
+  - sed -i -e 's|KUBE_ADMIN_KEY|'"${KUBE_ADMIN_KEY}"'|g' kubeconfig
+  - sed -i -e 's|KUBERNETES_TOKEN|'"${KUBERNETES_TOKEN}"'|g' kubeconfig
 script:
-  - docker push dotunn/travis:node
+  - docker push dotunn/travis:node0
+  - bash scripts/updateKube.sh
 
-# deploy:
-####### Deploy to aws codedeploy ######
-# other supported providers can  be found here https://docs.travis-ci.com/user/deployment-v2/ 
-#   - provider: codedeploy 
-#     access_key_id: <encrypted access_key_id>
-#     secret_access_key: <encrypted secret_access_key>
-#     bucket: <bucket>
-#     key: <bucket_key>
-#     application: <app>
-#     deployment_group: <deployment_group>
-#     edge: true # opt in to dpl v2
+deploy:
+  #########################
+  # Deploy to AKS
+  ######################### 
+  provider: script
+  script: bash scripts/deploy.sh
+  on:
+    branch: travis-node 
 
-notifications:
-  email:
-    recipients:
-      - stevedot.olabode@gmail.com # email associated with repo
-    on_success: always # can change to never
-    on_failure: always # can change to never
+
+#notifications:
+#  email:
+#    recipients:
+#      - stevedot.olabode@gmail.com # email associated with repo
+#    on_success: always # can change to never
+#    on_failure: always # can change to never
