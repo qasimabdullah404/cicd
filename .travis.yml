@@ -15,19 +15,22 @@ before_install:
   - sed -i -e 's|KUBE_ADMIN_CERT|'"${KUBE_ADMIN_CERT}"'|g' kubeconfig
   - sed -i -e 's|KUBE_ADMIN_KEY|'"${KUBE_ADMIN_KEY}"'|g' kubeconfig
   - sed -i -e 's|KUBERNETES_TOKEN|'"${KUBERNETES_TOKEN}"'|g' kubeconfig
-  - ls $TRAVIS_BUILD_DIR 
+  - pwd
 script:
   - docker push dotunn/travis:node0
   - bash scripts/updateKube.sh
 
-deploy:
+#deploy:
   #########################
   # Deploy to AKS
   ######################### 
-  provider: script
-  script: bash scripts/deploy.sh
-  on:
-    branch: travis-node 
+ # provider: script
+#script: 
+  - pwd 
+  - bash scripts/deploy.sh
+
+ # on:
+  #  branch: travis-node 
 
 
 #notifications:
